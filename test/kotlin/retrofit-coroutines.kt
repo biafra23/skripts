@@ -21,47 +21,6 @@ import ru.gildor.coroutines.retrofit.awaitResponse
 import ru.gildor.coroutines.retrofit.awaitResult
 import rx.Single
 
-
-/**
- ** Trying out: Kotlin Coroutines for Retrofit
- ** https://github.com/gildor/kotlin-coroutines-retrofit
- */
-
-class KotlinCoroutinesRetrofitTest : StringSpec() { init {
-    val args = mapOf("gender" to "MALE", "age" to "42")
-
-    "Call.await()" {
-        runBlocking {
-            val response = IO.httpbinService.get(args).await().debug("response")
-            response.args shouldBe args
-        }
-    }
-
-    "Call.await() throw an exception" {
-        shouldThrow<HttpException> {
-            runBlocking {
-                IO.httpbinService.status(401).await()
-            }
-        }
-    }
-
-    "Call.awaitResponse()" {
-        runBlocking {
-            val response = IO.httpbinService.status(304).awaitResponse().debug("response")
-            response.message() shouldBe "NOT MODIFIED"
-        }
-    }
-
-    "Call.awaitResult()" {
-        runBlocking {
-            IO.httpbinService.get(args).awaitResult() should be an Result.Ok::class
-            IO.httpbinService.status(404).awaitResult() should be an Result.Error::class
-            IO.httpbinService.invalid().awaitResult() should be an Result.Exception::class
-        }
-    }
-}
-}
-
 object IO {
     val moshi = Moshi.Builder().build()
     val response = moshi.adapter(HttpbinResponse::class.java)
